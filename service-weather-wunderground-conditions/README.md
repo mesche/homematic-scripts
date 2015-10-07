@@ -15,11 +15,11 @@ Store each value like temperature, weather condition, humidity, wind etc. into a
 
 ### Configuration
 
-CUXD_ID = "CUX2801001:1";              Serialnumber of the CUx-Daemon channel
-API_KEY = "<PLEASE INSERT>";           Your Wunderground API key 
-API_FEATURE = "conditions";            One or more data features can be combined into a single request
-API_LANG = "DL";                       Default: EN - Returns the API response in the specified language
-API_QUERY = "Germany/Berlin";          The location for which you want weather information
+CUXD_ID = "CUX2801001:1";         |      Serialnumber of the CUx-Daemon channel
+API_KEY = "<PLEASE INSERT>";      |      Your Wunderground API key 
+API_FEATURE = "conditions";       |      One or more data features can be combined into a single request
+API_LANG = "DL";                  |      Default: EN - Returns the API response in the specified language
+API_QUERY = "Germany/Berlin";     |      The location for which you want weather information
 
 
 ### Links
