@@ -74,15 +74,15 @@ string paramList;
   paramList = paramList # SEP_LIST #  "temp_c"              # SEP #   "Temperatur"                       # SEP #   "float"     # SEP #   "°C";
   paramList = paramList # SEP_LIST #  "relative_humidity"   # SEP #   "Luftfeuchte"                      # SEP #   "float"     # SEP #   "%";
   paramList = paramList # SEP_LIST #  "pressure_mb"         # SEP #   "Luftdruck in Millibar"            # SEP #   "float"     # SEP #   "mb";
-! paramList = paramList # SEP_LIST #  "observation_time"    # SEP #   "Beobachtungszeitpunkt"            # SEP #   "string";
-! paramList = paramList # SEP_LIST #  "UV"                  # SEP #   "UV-Wert"                          # SEP #   "string";
-! paramList = paramList # SEP_LIST #  "wind_string"         # SEP #   "Windbedingungen"                  # SEP #   "string";
-! paramList = paramList # SEP_LIST #  "wind_kph"            # SEP #   "Windgeschwindigkeit"              # SEP #   "float"     # SEP #   "km/h";
-! paramList = paramList # SEP_LIST #  "wind_gust_kph"       # SEP #   "Windboeen"                        # SEP #   "float"     # SEP #   "km/h";  
-! paramList = paramList # SEP_LIST #  "wind_dir"            # SEP #   "Windrichtung"                     # SEP #   "string";
-! paramList = paramList # SEP_LIST #  "wind_degrees"        # SEP #   "Windrichtung (Grad)"              # SEP #   "float"     # SEP #   "°";
-! paramList = paramList # SEP_LIST #  "dewpoint_c"          # SEP #   "Taupunkt"                         # SEP #   "float"     # SEP #   "°C";
-! paramList = paramList # SEP_LIST #  "pressure_trend"      # SEP #   "Luftdrucktrend"                   # SEP #   "string";
+  paramList = paramList # SEP_LIST #  "observation_time"    # SEP #   "Beobachtungszeitpunkt"            # SEP #   "string";
+  paramList = paramList # SEP_LIST #  "UV"                  # SEP #   "UV-Wert"                          # SEP #   "string";
+  paramList = paramList # SEP_LIST #  "wind_string"         # SEP #   "Windbedingungen"                  # SEP #   "string";
+  paramList = paramList # SEP_LIST #  "wind_kph"            # SEP #   "Windgeschwindigkeit"              # SEP #   "float"     # SEP #   "km/h";
+  paramList = paramList # SEP_LIST #  "wind_gust_kph"       # SEP #   "Windboeen"                        # SEP #   "float"     # SEP #   "km/h";  
+  paramList = paramList # SEP_LIST #  "wind_dir"            # SEP #   "Windrichtung"                     # SEP #   "string";
+  paramList = paramList # SEP_LIST #  "wind_degrees"        # SEP #   "Windrichtung (Grad)"              # SEP #   "float"     # SEP #   "°";
+  paramList = paramList # SEP_LIST #  "dewpoint_c"          # SEP #   "Taupunkt"                         # SEP #   "float"     # SEP #   "°C";
+  paramList = paramList # SEP_LIST #  "pressure_trend"      # SEP #   "Luftdrucktrend"                   # SEP #   "string";
 
 !
 ! Load data with CUxD
