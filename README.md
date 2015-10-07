@@ -1,5 +1,5 @@
-Collection of Scripts for the Homematic CCU
-============================================
+Scripts for the Homematic CCU
+==============================
 
 ### Introduction
 
