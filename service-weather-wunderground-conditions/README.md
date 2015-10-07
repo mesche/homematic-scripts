@@ -15,6 +15,8 @@ Store each value like temperature, weather condition, humidity, wind etc. into a
 
 ### Configuration
 
+Variable                          |      Description
+--------------------------------- | --------------------------------
 CUXD_ID = "CUX2801001:1";         |      Serialnumber of the CUx-Daemon channel
 API_KEY = "<PLEASE INSERT>";      |      Your Wunderground API key 
 API_FEATURE = "conditions";       |      One or more data features can be combined into a single request
