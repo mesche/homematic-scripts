@@ -1,0 +1,197 @@
+! Call the Wunderground API via HTTP request to get the current weather data of a certain place.
+! Store each value like temperature, weather condition, humidity, wind etc. into a system variable.
+! 
+! Requirements:
+! - CUx-Daemon (CuxD)
+! - Wunderground API key
+!
+! Version 1.0.0
+! Author: Markus Eschenbach
+! Website: www.blogging-it.com
+!
+! Links:
+! http://www.wunderground.com/weather/api/
+! http://www.wunderground.com/weather/api/d/docs?d=language-support
+!
+!
+!     ::::::::::::::: www.blogging-it.com :::::::::::::::
+!  
+!  Copyright (C) 2015 Markus Eschenbach. All rights reserved.
+!  
+!  
+!  This software is provided on an "as-is" basis, without any express or implied warranty.
+!  In no event shall the author be held liable for any damages arising from the
+!  use of this software.
+!  
+!  Permission is granted to anyone to use this software for any purpose,
+!  including commercial applications, and to alter and redistribute it,
+!  provided that the following conditions are met:
+!  
+!  1. All redistributions of source code files must retain all copyright
+!     notices that are currently in place, and this list of conditions without
+!     modification.
+!  
+!  2. All redistributions in binary form must retain all occurrences of the
+!     above copyright notice and web site addresses that are currently in
+!     place (for example, in the About boxes).
+!  
+!  3. The origin of this software must not be misrepresented; you must not
+!     claim that you wrote the original software. If you use this software to
+!     distribute a product, an acknowledgment in the product documentation
+!     would be appreciated but is not required.
+!  
+!  4. Modified versions in source or binary form must be plainly marked as
+!     such, and must not be misrepresented as being the original software.
+!  
+!     ::::::::::::::: www.blogging-it.com :::::::::::::::
+! =================================================================== 
+
+!
+! USER-CONFIGURATION
+!
+string CUXD_ID = "CUX2801001:1";              ! Serialnumber of the CUx-Daemon channel
+string API_KEY = "<PLEASE INSERT>";           ! Your Wunderground API key 
+string API_FEATURE = "conditions";            ! One or more data features can be combined into a single request
+string API_LANG = "DL";                       ! Default: EN - Returns the API response in the specified language
+string API_QUERY = "Germany/Berlin";          ! The location for which you want weather information
+
+string url = "http://api.wunderground.com/api/"#API_KEY#"/"#API_FEATURE#"/lang:"#API_LANG#"/q/"#API_QUERY#".xml";
+
+!
+! Declare variables
+!
+string CUXD_CMD_SETS = "CUxD."#CUXD_ID#".CMD_SETS";
+string CUXD_CMD_QUERY_RET = "CUxD."#CUXD_ID#".CMD_QUERY_RET";
+string CUXD_CMD_RET = "CUxD."#CUXD_ID#".CMD_RETS";
+string SEP_LIST = ";";
+string SEP = "#";
+string SV_PREFIX = "Weather_";
+
+string paramList;
+  paramList =                         "city"                # SEP #   "Standort der Messstelle"          # SEP #   "string";
+  paramList = paramList # SEP_LIST #  "observation_epoch"   # SEP #   "Beobachtungszeitpunkt (Epoche)"   # SEP #   "timestamp";
+  paramList = paramList # SEP_LIST #  "weather"             # SEP #   "Wetterbedingungen"                # SEP #   "string";
+  paramList = paramList # SEP_LIST #  "temp_c"              # SEP #   "Temperatur"                       # SEP #   "float"     # SEP #   "°C";
+  paramList = paramList # SEP_LIST #  "relative_humidity"   # SEP #   "Luftfeuchte"                      # SEP #   "float"     # SEP #   "%";
+  paramList = paramList # SEP_LIST #  "pressure_mb"         # SEP #   "Luftdruck in Millibar"            # SEP #   "float"     # SEP #   "mb";
+! paramList = paramList # SEP_LIST #  "observation_time"    # SEP #   "Beobachtungszeitpunkt"            # SEP #   "string";
+! paramList = paramList # SEP_LIST #  "UV"                  # SEP #   "UV-Wert"                          # SEP #   "string";
+! paramList = paramList # SEP_LIST #  "wind_string"         # SEP #   "Windbedingungen"                  # SEP #   "string";
+! paramList = paramList # SEP_LIST #  "wind_kph"            # SEP #   "Windgeschwindigkeit"              # SEP #   "float"     # SEP #   "km/h";
+! paramList = paramList # SEP_LIST #  "wind_gust_kph"       # SEP #   "Windboeen"                        # SEP #   "float"     # SEP #   "km/h";  
+! paramList = paramList # SEP_LIST #  "wind_dir"            # SEP #   "Windrichtung"                     # SEP #   "string";
+! paramList = paramList # SEP_LIST #  "wind_degrees"        # SEP #   "Windrichtung (Grad)"              # SEP #   "float"     # SEP #   "°";
+! paramList = paramList # SEP_LIST #  "dewpoint_c"          # SEP #   "Taupunkt"                         # SEP #   "float"     # SEP #   "°C";
+! paramList = paramList # SEP_LIST #  "pressure_trend"      # SEP #   "Luftdrucktrend"                   # SEP #   "string";
+
+!
+! Load data with CUxD
+!
+dom.GetObject(CUXD_CMD_SETS).State("wget -q -O - '"#url#"'");
+dom.GetObject(CUXD_CMD_QUERY_RET).State(1);
+string xml_data = dom.GetObject(CUXD_CMD_RET).State();
+
+! replace unneeded data
+integer header_position = xml_data.Find("display_location");
+xml_data = xml_data.Substr(header_position, (xml_data.Length() - header_position));
+
+
+integer counter = 0;
+string curEntity; 
+
+foreach (curEntity, paramList.Split(SEP_LIST)){
+  counter = counter + 1;
+  string entityKey = curEntity.StrValueByIndex(SEP, 0);
+  string entityDesc = curEntity.StrValueByIndex(SEP, 1);
+  integer entityType = curEntity.StrValueByIndex(SEP, 2);
+  string entityUnit = curEntity.StrValueByIndex(SEP, 3);
+  string entityName = SV_PREFIX # entityKey;
+
+  object entity_SV_Object = dom.GetObject(entityName);
+
+  ! WriteLine("Check SV " # counter # " : " # entityName);
+
+
+  ! Create system variable if not exist
+  ! --------------------      
+    if (!entity_SV_Object){ 
+
+      ! WriteLine("Create new SV: Type: " # entityType # " Unit: " # entityUnit);
+
+      object sv_Object_List = dom.GetObject(ID_SYSTEM_VARIABLES);
+
+      entity_SV_Object = dom.CreateObject(OT_VARDP);
+      sv_Object_List.Add(entity_SV_Object.ID());
+      entity_SV_Object.Name(entityName);
+      entity_SV_Object.DPInfo(entityDesc);
+
+      if(entityUnit){
+       entity_SV_Object.ValueUnit(entityUnit);
+      }
+      dom.RTUpdate(false);
+
+      if(entityType == "float"){
+        entity_SV_Object.ValueType(ivtFloat); 
+        entity_SV_Object.ValueSubType(istGeneric);
+        entity_SV_Object.ValueMin(-100);
+        entity_SV_Object.ValueMax(100);
+      } else {
+        entity_SV_Object.ValueType(ivtString);  
+        entity_SV_Object.ValueSubType(istChar8859);
+      }
+
+    }
+  ! --------------------
+
+  !
+  ! Read values from XML
+  !
+
+  integer key_length = entityKey.Length();
+  integer key_position = xml_data.Find(entityKey);
+  string xml_line = xml_data.Substr((key_length + key_position + 1), 100);
+  key_position = xml_line.Find(entityKey);
+
+  object xml_value  = xml_line.Substr(0, (key_position -2));
+
+
+  !
+  ! convert values
+  !
+  ! --------------------
+  if(entityType == "float"){
+    xml_value = xml_value.ToFloat();
+  }
+
+  if(entityType == "timestamp"){
+    xml_value = xml_value.ToFloat().ToTime().ToString("%d.%m.%Y %H:%M:%S");
+  }
+  
+  !
+  ! modify values
+  !
+  ! --------------------
+  if(entityKey == "observation_time"){
+    xml_value  = xml_value.Substr(16, (xml_value.Length() - 21));
+  }
+  
+  ! replace special characters
+  if(entityKey == "wind_dir"){
+    string spc = "Ã¼";
+    integer spcIdx =  xml_value.Find(spc);
+    if(spcIdx != -1){
+        xml_value = xml_value.Substr(0,spcIdx) # "ü" # xml_value.Substr(spcIdx + spc.Length());
+        spcIdx = xml_value.Find(spc); 
+        if(spcIdx != -1){
+            xml_value = xml_value.Substr(0,spcIdx) # "ü" # xml_value.Substr(spcIdx + spc.Length());
+        }
+    } 
+  }
+
+  ! Store value to system variable
+  entity_SV_Object.State(xml_value);
+
+  ! WriteLine(xml_value);
+}
+
+WriteLine("Weather data updated");
