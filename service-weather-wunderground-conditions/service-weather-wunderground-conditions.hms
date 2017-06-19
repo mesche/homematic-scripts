@@ -59,6 +59,7 @@ string url = "http://api.wunderground.com/api/"#API_KEY#"/"#API_FEATURE#"/lang:"
 !
 ! Declare variables
 !
+
 string CUXD_CMD_SETS = "CUxD."#CUXD_ID#".CMD_SETS";
 string CUXD_CMD_QUERY_RET = "CUxD."#CUXD_ID#".CMD_QUERY_RET";
 string CUXD_CMD_RET = "CUxD."#CUXD_ID#".CMD_RETS";
@@ -86,6 +87,7 @@ string paramList;
 !
 ! Load data with CUxD
 !
+
 dom.GetObject(CUXD_CMD_SETS).State("wget -q -O - '"#url#"'");
 dom.GetObject(CUXD_CMD_QUERY_RET).State(1);
 string xml_data = dom.GetObject(CUXD_CMD_RET).State();
@@ -158,6 +160,7 @@ foreach (curEntity, paramList.Split(SEP_LIST)){
   ! convert values
   !
   ! --------------------
+  
   if(entityType == "float"){
     xml_value = xml_value.ToFloat();
   }
@@ -170,6 +173,7 @@ foreach (curEntity, paramList.Split(SEP_LIST)){
   ! modify values
   !
   ! --------------------
+  
   if(entityKey == "observation_time"){
     xml_value  = xml_value.Substr(16, (xml_value.Length() - 21));
   }
